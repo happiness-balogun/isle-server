@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const db = require("./config/config").get(process.env.NODE_ENV);
 const User = require("./models/user");
+const Appointment = require("./models/appointment");
 const { auth } = require("./middlewares/auth");
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(cors());
 
 // database connection
 mongoose.Promise = global.Promise;
+
 mongoose.connect(
   db.DATABASE,
   { useNewUrlParser: true, useUnifiedTopology: true },
@@ -24,10 +26,6 @@ mongoose.connect(
     console.log("database is connected");
   }
 );
-
-// app.get("/", (req, res) => {
-//   res.status(200).send(`Welcome to login , sign-up api`);
-// });
 
 // adding new user (sign-up route)
 app.post("/api/register", function (req, res) {
@@ -123,6 +121,28 @@ app.get("/api/logout", auth, function (req, res) {
       return res.status(400).send(err);
     }
     res.status(200).json({ succes: true });
+  });
+});
+
+//APPOINTMENTS
+
+//get appointments
+app.get("/api/appointments", (req, res, next) => {
+  Appointment.find({})
+    .then((appointments) => {
+      console.log("appointments", appointments);
+      res.send(appointments);
+    })
+    .catch(next);
+});
+
+//save appointment
+app.post("/api/appointment", (req, res) => {
+  const newappointment = new Appointment(req.body);
+
+  console.log("save-appointment", newappointment, req, res);
+  Appointment.create(req.body).then((newappointment) => {
+    res.send(newappointment);
   });
 });
 

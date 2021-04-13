@@ -40,6 +40,7 @@ const userSchema = mongoose.Schema({
     type: String,
   },
 });
+
 // to signup a user
 userSchema.pre("save", function (next) {
   var user = this;
